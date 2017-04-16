@@ -45,11 +45,11 @@ def main():
 
                     if age > settings.MINIMUM_AGE:
                         console_log('file age %d greater than threshold %d'
-                                    % (str(age), str(settings.MINIMUM_AGE)))
+                                    % (age, settings.MINIMUM_AGE))
                         attempt_delete = False
                     else:
                         console_log('file age %d less than threshold %d'
-                                    % (str(age), str(settings.MINIMUM_AGE)))
+                                    % (age, settings.MINIMUM_AGE))
 
                 if attempt_delete:
                     console_log('removedirs at %s' %path)
