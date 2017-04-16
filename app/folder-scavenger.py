@@ -52,14 +52,24 @@ def main():
                                     % (age, settings.MINIMUM_AGE))
 
                 if attempt_delete:
+                    if settings.DELETE_LEAF_CONTENTS:
+                        files = [os.path.join(path, o)
+                                 for o in os.listdir(path)
+                                 if os.path.isfile(os.path.join(path, o))]
+
+                        if len(files) > 0:
+                            for file in files:
+                                console_log('removing %s' % file)
+                                os.remove(file)
+
                     console_log('removedirs at %s' %path)
                     try:
                         os.removedirs(path)
                     except OSError as os_exception:
                         console_log('removedirs failed: %s' % str(os_exception))
 
-        console_log('sleeping for ' + str(settings.SLEEP_SECONDS) + ' second(s)')
-        time.sleep(int(settings.SLEEP_SECONDS))
+        console_log('sleeping for %s second(s)' % settings.SLEEP_SECONDS)
+        time.sleep(settings.SLEEP_SECONDS)
 
 def console_log(message):
 
