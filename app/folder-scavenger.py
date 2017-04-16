@@ -43,12 +43,12 @@ def main():
                     age = time.time() - os.stat(path).st_mtime
                     console_log('file age is %d' % age)
 
-                    if age > settings.MINIMUM_AGE:
-                        console_log('file age %d greater than threshold %d'
+                    if age < settings.MINIMUM_AGE:
+                        console_log('file age %d less than threshold %d'
                                     % (age, settings.MINIMUM_AGE))
                         attempt_delete = False
                     else:
-                        console_log('file age %d less than threshold %d'
+                        console_log('file age %d greater than threshold %d'
                                     % (age, settings.MINIMUM_AGE))
 
                 if attempt_delete:
