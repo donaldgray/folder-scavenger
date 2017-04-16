@@ -36,11 +36,22 @@ def main():
             else:
                 console_log('no more subfolders')
                 keep_going = False
-                console_log('removedirs at %s' %path)
-                try:
-                    os.removedirs(path)
-                except OSError as os_exception:
-                    console_log('removedirs failed: %s' % str(os_exception))
+
+                attempt_delete = True
+
+                if settings.MINIMUM_AGE > 0:
+                    age = time.time() - os.stat(path).st_mtime
+                    if age < settings.MINIMUM_AGE:
+                        console_log('file age less than minimum %d < %d'
+                                    % (str(age), str(settings.MINIMUM_AGE)))
+                        attempt_delete = False
+
+                if attempt_delete:
+                    console_log('removedirs at %s' %path)
+                    try:
+                        os.removedirs(path)
+                    except OSError as os_exception:
+                        console_log('removedirs failed: %s' % str(os_exception))
 
         console_log('sleeping for ' + str(settings.SLEEP_SECONDS) + ' second(s)')
         time.sleep(int(settings.SLEEP_SECONDS))
