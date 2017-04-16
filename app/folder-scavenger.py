@@ -23,26 +23,24 @@ def main():
 
         path = settings.ROOT_FOLDER
 
-        try:
+        keep_going = True
 
-            keep_going = True
+        while keep_going:
+            subfolders = [os.path.join(path, o)
+                          for o in os.listdir(path)
+                          if os.path.isdir(os.path.join(path, o))]
 
-            while keep_going:
-                subfolders = [os.path.join(path, o)
-                              for o in os.listdir(path)
-                              if os.path.isdir(os.path.join(path, o))]
-
-                if len(subfolders) > 0:
-                    path = random.choice(subfolders)
-                    console_log('descending to %s' % path)
-                else:
-                    console_log('no more subfolders')
-                    keep_going = False
-                    console_log('removedirs at %s' %path)
+            if len(subfolders) > 0:
+                path = random.choice(subfolders)
+                console_log('descending to %s' % path)
+            else:
+                console_log('no more subfolders')
+                keep_going = False
+                console_log('removedirs at %s' %path)
+                try:
                     os.removedirs(path)
-
-        except OSError as os_exception:
-            console_log("hit problem during operation: " + str(os_exception))
+                except OSError as os_exception:
+                    console_log('removedirs failed: %s' % str(os_exception))
 
         console_log('sleeping for ' + str(settings.SLEEP_SECONDS) + ' second(s)')
         time.sleep(int(settings.SLEEP_SECONDS))
