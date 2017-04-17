@@ -25,6 +25,14 @@ def main():
 
         keep_going = True
 
+        free_space_percentage = get_free_space(path)
+        console_log('free space = %d%%' % free_space_percentage)
+
+        if free_space_percentage > settings.FREE_SPACE_THRESHOLD:
+            console_log('free space greater than threshold (%d%%)'
+                        % settings.FREE_SPACE_THRESHOLD)
+            keep_going = False
+
         while keep_going:
             subfolders = [os.path.join(path, o)
                           for o in os.listdir(path)
@@ -38,6 +46,11 @@ def main():
                 keep_going = False
 
                 attempt_delete = True
+
+                if path == settings.ROOT_FOLDER:
+                    console_log('this is the root, so we stop here.')
+                    attempt_delete = False
+                    continue
 
                 if settings.MINIMUM_AGE > 0:
                     age = time.time() - os.stat(path).st_mtime
@@ -70,6 +83,16 @@ def main():
 
         console_log('sleeping for %s second(s)' % settings.SLEEP_SECONDS)
         time.sleep(settings.SLEEP_SECONDS)
+
+def get_free_space(pathname):
+    st = os.statvfs(pathname)
+    free = st.f_bavail * st.f_frsize
+    total = st.f_blocks * st.f_frsize
+    used = st.f_frsize * (st.f_blocks - st.f_bfree)
+    if total > 0:
+        return 100 - (100 * (float(used) / total))
+
+    return 100
 
 def console_log(message):
 

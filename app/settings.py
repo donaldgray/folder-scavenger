@@ -12,3 +12,8 @@ if "DELETE_LEAF_CONTENTS" in os.environ:
     DELETE_LEAF_CONTENTS = bool(os.environ.get('DELETE_LEAF_CONTENTS'))
 else:
     DELETE_LEAF_CONTENTS = False
+
+if "FREE_SPACE_THRESHOLD" in os.environ:
+    FREE_SPACE_THRESHOLD = int(os.environ.get('FREE_SPACE_THRESHOLD'))
+else:
+    FREE_SPACE_THRESHOLD = 100
