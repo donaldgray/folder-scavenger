@@ -1,6 +1,6 @@
 import os
 
-SLEEP_SECONDS = int(os.environ.get('SLEEP_SECONDS'))
+SLEEP_SECONDS = float(os.environ.get('SLEEP_SECONDS'))
 ROOT_FOLDER = os.environ.get('ROOT_FOLDER')
 
 if "MINIMUM_AGE" in os.environ:
