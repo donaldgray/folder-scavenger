@@ -28,9 +28,13 @@ def main():
         free_space_percentage = get_free_space(path)
         console_log('free space = %d%%' % free_space_percentage)
 
+        if settings.USE_INODES:
+            console_log('(based on number of free inodes)')
+
         if free_space_percentage > settings.FREE_SPACE_THRESHOLD:
             console_log('free space greater than threshold (%d%%)'
                         % settings.FREE_SPACE_THRESHOLD)
+
             keep_going = False
 
         while keep_going:
@@ -86,9 +90,16 @@ def main():
 
 def get_free_space(pathname):
     st = os.statvfs(pathname)
-    free = st.f_bavail * st.f_frsize
-    total = st.f_blocks * st.f_frsize
-    used = st.f_frsize * (st.f_blocks - st.f_bfree)
+
+    if settings.USE_INODES:
+        free = st.f_favail
+        total = st.f_files
+        used = total-free
+    else:
+        free = st.f_bavail * st.f_frsize
+        total = st.f_blocks * st.f_frsize
+        used = st.f_frsize * (st.f_blocks - st.f_bfree)
+
     if total > 0:
         return 100 - (100 * (float(used) / total))
 

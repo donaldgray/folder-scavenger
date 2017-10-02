@@ -17,3 +17,8 @@ if "FREE_SPACE_THRESHOLD" in os.environ:
     FREE_SPACE_THRESHOLD = int(os.environ.get('FREE_SPACE_THRESHOLD'))
 else:
     FREE_SPACE_THRESHOLD = 100
+
+if "USE_INODES" in os.environ:
+    USE_INODES = bool(os.environ.get('USE_INODES').lower()=='true')
+else:
+    USE_INODES = False
