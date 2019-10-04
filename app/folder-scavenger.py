@@ -84,7 +84,7 @@ def main():
                         logger.info("leaf has no contents - will check minimum age of path later")
                     else:
                         for file in files:
-                            age = time.time() - os.stat(file).st_mtime
+                            age = int(time.time() - os.stat(file).st_mtime)
                             if age < settings.MINIMUM_AGE:
                                 logger.info(f"found file {file} at age {age} less than threshold {settings.MINIMUM_AGE}, so will not attempt delete")
                                 attempt_delete = False
@@ -92,7 +92,7 @@ def main():
 
                 if attempt_delete and settings.MINIMUM_AGE > 0:
                     logger.info("using normal path-age strategy")
-                    age = time.time() - os.stat(path).st_mtime
+                    age = int(time.time() - os.stat(path).st_mtime)
                     logger.debug(f"path age is {age}")
 
                     if age < settings.MINIMUM_AGE:
