@@ -93,7 +93,7 @@ def main():
                 if attempt_delete and settings.MINIMUM_AGE > 0:
                     logger.info("using normal path-age strategy")
                     age = time.time() - os.stat(path).st_mtime
-                    logger.debug("path age is {age}")
+                    logger.debug(f"path age is {age}")
 
                     if age < settings.MINIMUM_AGE:
                         logger.info(f"path age {age} less than threshold {settings.MINIMUM_AGE}")
