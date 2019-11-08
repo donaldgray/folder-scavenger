@@ -9,3 +9,5 @@ DELETE_LEAF_CONTENTS = bool(distutils.util.strtobool(os.getenv("DELETE_LEAF_CONT
 FREE_SPACE_THRESHOLD = int(os.getenv("FREE_SPACE_THRESHOLD", default="100"))
 USE_INODES = bool(distutils.util.strtobool(os.getenv("USE_INODES", default="False")))
 CHECK_FILE_AGE = bool(distutils.util.strtobool(os.getenv("CHECK_FILE_AGE", default="False")))
+SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL", default=None)
+WAIT_FOR_ROOT_TO_EXIST = bool(distutils.util.strtobool(os.getenv("WAIT_FOR_ROOT_TO_EXIST", default="False")))

@@ -7,6 +7,7 @@ import string
 import datetime
 import settings
 import random
+import requests
 import logging
 import logzero
 from logzero import logger
@@ -15,6 +16,9 @@ requested_to_quit = False
 
 def main():
     logger.info("starting")
+
+    if settings.SLACK_WEBHOOK_URL is not None:
+        _ = requests.post(settings.SLACK_WEBHOOK_URL, json={"text": f"Scavenger for {settings.ROOT_FOLDER} starting", "link_names": 1})
 
     setup_signal_handling()
 
@@ -26,6 +30,13 @@ def main():
     #       descend at random
     #   else:
     #     os.removedirs(path)
+
+    if settings.WAIT_FOR_ROOT_TO_EXIST:
+        logger.info("waiting for root folder to exist")
+        while not os.path.isdir(settings.ROOT_FOLDER):
+            logger.info(f"root folder not present, sleeping for {settings.SLEEP_SECONDS} seconds")
+            time.sleep(settings.SLEEP_SECONDS)
+        logger.info("root folder exists")
 
     while not requested_to_quit:
 
