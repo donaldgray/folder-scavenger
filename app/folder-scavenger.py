@@ -14,11 +14,25 @@ from logzero import logger
 
 requested_to_quit = False
 
+def slack_announce(message):
+    if settings.SLACK_WEBHOOK_URL is not None:
+        _ = requests.post(settings.SLACK_WEBHOOK_URL, json={"text": message, "link_names": 1})
+
+
+def announce_error(message):
+    logger.error(message)
+    slack_announce(message)
+
+
+def announce(message):
+    logger.info(message)
+    slack_announce(message)
+
+
 def main():
     logger.info("starting")
 
-    if settings.SLACK_WEBHOOK_URL is not None:
-        _ = requests.post(settings.SLACK_WEBHOOK_URL, json={"text": f"Scavenger for {settings.ROOT_FOLDER} starting", "link_names": 1})
+    announce(f"Scavenger for {settings.ROOT_FOLDER} starting")
 
     setup_signal_handling()
 
@@ -61,7 +75,7 @@ def main():
                             for o in os.listdir(path)
                             if os.path.isdir(os.path.join(path, o))]
             except OSError as os_exception:
-                logger.error(f"problem during fetch of subfolders: {os_exception}")
+                announce_error(f"problem during fetch of subfolders: {os_exception}")
                 keep_going = False
                 continue
 
@@ -87,7 +101,7 @@ def main():
                                 for o in os.listdir(path)
                                 if os.path.isfile(os.path.join(path, o))]
                     except OSError as os_exception:
-                        logger.error(f"problem during fetch of files: {os_exception}")
+                        announce_error(f"problem during fetch of files: {os_exception}")
                         keep_going = False
                         continue
 
@@ -95,7 +109,12 @@ def main():
                         logger.info("leaf has no contents - will check minimum age of path later")
                     else:
                         for file in files:
-                            age = int(time.time() - os.stat(file).st_mtime)
+                            age = 0
+                            try:
+                                age = int(time.time() - os.stat(file).st_mtime)
+                            except FileNotFoundError as fnf_exception:
+                                announce_error(f"os.stat on {file} failed: {fnf_exception}")
+
                             if age < settings.MINIMUM_AGE:
                                 logger.info(f"found file {file} at age {age} less than threshold {settings.MINIMUM_AGE}, so will not attempt delete")
                                 attempt_delete = False
@@ -127,7 +146,7 @@ def main():
                     try:
                         os.removedirs(path)
                     except OSError as os_exception:
-                        logger.error(f"removedirs failed: {os_exception}")
+                        announce_error(f"removedirs failed: {os_exception}")
 
         logger.info(f"sleeping for {settings.SLEEP_SECONDS} second(s)")
         time.sleep(settings.SLEEP_SECONDS)
