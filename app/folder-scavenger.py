@@ -21,18 +21,18 @@ def slack_announce(message):
 
 def announce_error(message):
     logger.error(message)
-    slack_announce(message)
+    slack_announce(f"scavenger: {message}")
 
 
 def announce(message):
     logger.info(message)
-    slack_announce(message)
+    slack_announce(f"scavenger: {message}")
 
 
 def main():
     logger.info("starting")
 
-    announce(f"Scavenger for {settings.ROOT_FOLDER} starting")
+    announce(f"{settings.ROOT_FOLDER} starting")
 
     setup_signal_handling()
 
@@ -114,6 +114,7 @@ def main():
                                 age = int(time.time() - os.stat(file).st_mtime)
                             except FileNotFoundError as fnf_exception:
                                 announce_error(f"os.stat on {file} failed: {fnf_exception}")
+                                break
 
                             if age < settings.MINIMUM_AGE:
                                 logger.info(f"found file {file} at age {age} less than threshold {settings.MINIMUM_AGE}, so will not attempt delete")
