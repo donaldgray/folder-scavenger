@@ -145,7 +145,11 @@ def main():
 
                             if age > settings.MINIMUM_AGE:
                                 logger.info(f"removing file {file} as age {age} greater than threshold {settings.MINIMUM_AGE}")
-                                os.remove(file)
+                                try:
+                                    os.remove(file)
+                                except FileNotFoundError as fnf_exception:
+                                    announce_error(f"os.remove on {file} failed: {fnf_exception}")
+                                    break
                     attempt_delete = False
 
                 elsif attempt_delete and settings.MINIMUM_AGE > 0:
