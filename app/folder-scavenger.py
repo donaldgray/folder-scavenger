@@ -121,7 +121,34 @@ def main():
                                 attempt_delete = False
                                 break
 
-                if attempt_delete and settings.MINIMUM_AGE > 0:
+                if attempt_delete and settings.PROCESS_INDIVIDUAL_FILES:
+                    logger.info("using process-individual-files strategy")
+                    try:
+                        files = [os.path.join(path, o)
+                                for o in os.listdir(path)
+                                if os.path.isfile(os.path.join(path, o))]
+                    except OSError as os_exception:
+                        announce_error(f"problem during fetch of files: {os_exception}")
+                        keep_going = False
+                        continue
+
+                    if len(files) == 0:
+                        logger.info("leaf has no contents - will check minimum age of path later")
+                    else:
+                        for file in files:
+                            age = 0
+                            try:
+                                age = int(time.time() - os.stat(file).st_mtime)
+                            except FileNotFoundError as fnf_exception:
+                                announce_error(f"os.stat on {file} failed: {fnf_exception}")
+                                break
+
+                            if age > settings.MINIMUM_AGE:
+                                logger.info(f"removing file {file} as age {age} greater than threshold {settings.MINIMUM_AGE}")
+                                os.remove(file)
+                    attempt_delete = False
+
+                elsif attempt_delete and settings.MINIMUM_AGE > 0:
                     logger.info("using normal path-age strategy")
                     age = int(time.time() - os.stat(path).st_mtime)
                     logger.debug(f"path age is {age}")
