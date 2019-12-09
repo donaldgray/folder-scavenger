@@ -40,10 +40,22 @@ def main():
     # so pick an item from the root on each cycle
 
     # loop:
-    #   while subfolders exist at path:
-    #       descend at random
-    #   else:
-    #     os.removedirs(path)
+    #   if free space > threshold:
+    #       next
+    #   path = root
+    #   loop:
+    #       if subfolders exist at path:
+    #           pick a randon descendant
+    #           add to path
+    #           next
+    #
+    #       if age of deepest subfolder is < minimum age:
+    #           next (will quit inner loop)
+    #
+    #       if flag set to delete leaf contents:
+    #           remove all files in deepest subfolder
+    #
+    #       os.removedirs(path)
 
     if settings.WAIT_FOR_ROOT_TO_EXIST:
         logger.info("waiting for root folder to exist")
