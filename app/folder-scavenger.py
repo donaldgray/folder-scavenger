@@ -188,7 +188,7 @@ def main():
 
                     logger.info(f"removedirs at {path}")
                     try:
-                        os.removedirs(path)
+                        remove_dirs_to_level(path, settings.ROOT_FOLDER)
                     except OSError as os_exception:
                         announce_error(f"removedirs failed: {os_exception}")
 
@@ -224,6 +224,20 @@ def get_free_space(pathname):
         return 100 - (100 * (float(used) / total))
 
     return 100
+
+
+def remove_dirs_to_level(base_path, root):
+    """Copy of os.removedirs but stops at 'root' level"""
+    os.rmdir(base_path)
+    head, tail = os.path.split(base_path)
+    if not tail:
+        head, tail = os.path.split(head)
+    while head and tail and head != root:
+        try:
+            os.rmdir(head)
+        except OSError:
+            break
+        head, tail = os.path.split(head)
 
 
 if __name__ == "__main__":
