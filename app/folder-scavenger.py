@@ -19,9 +19,10 @@ def slack_announce(message):
         _ = requests.post(settings.SLACK_WEBHOOK_URL, json={"text": message, "link_names": 1})
 
 
-def announce_error(message):
+def announce_error(message, try_slack_announce = True):
     logger.error(message)
-    slack_announce(f"scavenger: {message}")
+    if try_slack_announce:
+        slack_announce(f"scavenger: {message}")
 
 
 def announce(message):
@@ -87,7 +88,7 @@ def main():
                             for o in os.listdir(path)
                             if os.path.isdir(os.path.join(path, o))]
             except OSError as os_exception:
-                announce_error(f"problem during fetch of subfolders: {os_exception}")
+                announce_error(f"problem during fetch of subfolders: {os_exception}", isinstance(os_exception, FileNotFoundError))
                 keep_going = False
                 continue
 
@@ -113,7 +114,7 @@ def main():
                                 for o in os.listdir(path)
                                 if os.path.isfile(os.path.join(path, o))]
                     except OSError as os_exception:
-                        announce_error(f"problem during fetch of files: {os_exception}")
+                        announce_error(f"problem during fetch of files: {os_exception}", isinstance(os_exception, FileNotFoundError))
                         keep_going = False
                         continue
 
@@ -140,7 +141,7 @@ def main():
                                 for o in os.listdir(path)
                                 if os.path.isfile(os.path.join(path, o))]
                     except OSError as os_exception:
-                        announce_error(f"problem during fetch of files: {os_exception}")
+                        announce_error(f"problem during fetch of files: {os_exception}", isinstance(os_exception, FileNotFoundError))
                         keep_going = False
                         continue
 
